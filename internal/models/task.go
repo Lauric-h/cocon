@@ -9,6 +9,7 @@ const (
 	CategoryCar    TaskCategory = "car"
 	CategorySchool TaskCategory = "school"
 	CategoryAdmin  TaskCategory = "admin"
+	CategoryFamily TaskCategory = "family"
 	CategoryMeal   TaskCategory = "meal"
 )
 
@@ -37,7 +38,7 @@ type TaskOccurrence struct {
 	ID          int
 	TaskID      int
 	Date        time.Time
-	AssignedTo  string // override ; vide = utilise Task.AssignedTo
+	AssignedTo  string
 	Done        bool
 	CompletedAt *time.Time
 }

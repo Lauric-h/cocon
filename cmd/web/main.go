@@ -45,6 +45,7 @@ func main() {
 		Meals:     &store.MealStore{DB: db},
 		Groceries: &store.GroceryStore{DB: db},
 		Templates: templates,
+		Tasks:     &store.TaskStore{DB: db},
 	}
 
 	port := os.Getenv("PORT")

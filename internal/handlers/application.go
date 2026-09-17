@@ -11,6 +11,7 @@ import (
 type Application struct {
 	Meals     *store.MealStore
 	Groceries *store.GroceryStore
+	Tasks     *store.TaskStore
 	Templates *template.Template
 }
 
@@ -28,6 +29,10 @@ func (app *Application) Routes() http.Handler {
 	mux.HandleFunc("POST /groceries/{id}/delete", app.deleteGrocery)
 	mux.HandleFunc("POST /groceries/clear-checked", app.clearCheckedGroceries)
 
+	mux.HandleFunc("POST /tasks", app.createTask)
+	mux.HandleFunc("POST /tasks/occurrences/{id}/toggle", app.toggleTaskOccurrence)
+	mux.HandleFunc("POST /tasks/{id}/delete", app.deleteTask)
+	
 	return mux
 }
 
