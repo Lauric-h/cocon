@@ -1,0 +1,13 @@
+{{define "meal-form"}}
+<div class="meal-slot-label">
+	<span class="meal-dot {{if eq .MealSlot "petit-déjeuner"}}breakfast{{else if eq .MealSlot "midi"}}noon{{else}}dinner{{end}}"></span>
+	{{.MealSlot}}
+</div>
+<form hx-post="/meals" hx-target="closest div" hx-swap="innerHTML">
+	<input type="hidden" name="date" value="{{.Date.Format "2006-01-02"}}">
+	<input type="hidden" name="meal_slot" value="{{.MealSlot}}">
+	<input type="text" name="dish" value="{{.Dish}}" placeholder="Ajouter…"
+		class="meal-input{{if .Dish}} filled{{end}}"
+		hx-post="/meals" hx-trigger="blur, keyup[key=='Enter']" hx-include="closest form" hx-target="closest div" hx-swap="innerHTML">
+</form>
+{{end}}

@@ -1,0 +1,49 @@
+{{define "planned_meals.tmpl"}}
+<!doctype html>
+<html lang="fr">
+<head>
+	<title>Repas &amp; Courses — Cocon</title>
+	{{template "head" .}}
+</head>
+<body>
+	{{template "header" .}}
+	<div class="app-shell">
+		<section class="meals-panel">
+			<p class="eyebrow">Semaine du {{.WeekStart.Format "02 January 2006"}}</p>
+			<h1 class="page-title">Planning repas</h1>
+
+			{{range .Days}}
+			<div class="day-card{{if .IsToday}} today{{end}}">
+				<div class="day-header">
+					<span class="day-name">{{.DayName}}</span>
+					<span class="day-date">{{.DateShort}}</span>
+					{{if .IsToday}}<span class="today-pill">Aujourd'hui</span>{{end}}
+					{{if not .HasMeals}}<span class="no-meals-label">Aucun repas planifié</span>{{end}}
+				</div>
+				<div class="meal-grid">
+					{{range .Cells}}
+					<div id="cell-{{.Date.Format "2006-01-02"}}-{{.MealSlot}}">
+						{{template "meal-form" .}}
+					</div>
+					{{end}}
+				</div>
+			</div>
+			{{end}}
+		</section>
+
+		<section class="groceries-panel">
+			<p class="eyebrow">{{.Groceries.Total}} article{{if ne .Groceries.Total 1}}s{{end}}</p>
+			<h2 class="page-title" style="font-size:1.875rem;">Courses</h2>
+
+			<form class="add-item-bar" hx-post="/groceries" hx-target="#grocery-list-wrapper" hx-swap="outerHTML" hx-on::after-request="this.reset()">
+				<input type="text" name="name" placeholder="Ajouter un article…" required>
+				<input type="number" name="quantity" placeholder="Qté">
+				<button type="submit">+</button>
+			</form>
+
+			{{template "grocery-list.tmpl" .Groceries}}
+		</section>
+	</div>
+</body>
+</html>
+{{end}}

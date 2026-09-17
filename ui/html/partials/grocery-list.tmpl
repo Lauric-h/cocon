@@ -1,0 +1,38 @@
+{{define "grocery-list.tmpl"}}
+<div id="grocery-list-wrapper">
+	{{if .Unchecked}}
+	<ul class="grocery-list">
+		{{range .Unchecked}}
+		<li class="grocery-item">
+			<input type="checkbox" class="grocery-checkbox" hx-post="/groceries/{{.ID}}/toggle" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">
+			<span class="name">{{.Name}}</span>
+			{{if .Quantity}}<span class="qty">×{{.Quantity}}</span>{{end}}
+			<a href="#" class="delete" hx-post="/groceries/{{.ID}}/delete" hx-target="#grocery-list-wrapper" hx-swap="outerHTML" hx-confirm="Supprimer cet article ?">✕</a>
+		</li>
+		{{end}}
+	</ul>
+	{{end}}
+
+	{{if and (not .Unchecked) (not .Checked)}}
+	<div class="empty-state">
+		<p>Votre liste est vide.<br>Ajoutez un article ci-dessus.</p>
+	</div>
+	{{end}}
+
+	{{if .Checked}}
+	<div class="section-label">
+		<span>Dans le panier ({{len .Checked}})</span>
+		<a href="#" hx-post="/groceries/clear-checked" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">Vider</a>
+	</div>
+	<ul class="grocery-list">
+		{{range .Checked}}
+		<li class="grocery-item checked">
+			<input type="checkbox" class="grocery-checkbox" checked hx-post="/groceries/{{.ID}}/toggle" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">
+			<span class="name">{{.Name}}</span>
+			{{if .Quantity}}<span class="qty">×{{.Quantity}}</span>{{end}}
+		</li>
+		{{end}}
+	</ul>
+	{{end}}
+</div>
+{{end}}
