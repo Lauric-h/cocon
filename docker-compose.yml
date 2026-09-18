@@ -1,6 +1,6 @@
 services:
   cocon:
-    image: ghcr.io/TON_USER/cocon:latest
+    image: ghcr.io/lauric-h/cocon:latest
     container_name: cocon
     restart: unless-stopped
 
