@@ -23,6 +23,7 @@
 				<span class="day-strip-num">{{.DayNum}}</span>
 				<div class="day-strip-dots">
 					{{range .MealDots}}<span class="meal-dot {{.}}"></span>{{end}}
+					{{if .HasEvent}}<span class="meal-dot event"></span>{{end}}
 				</div>
 			</div>
 			{{end}}
@@ -46,6 +47,25 @@
 				<p class="no-meals-label">Aucun repas planifié aujourd'hui.</p>
 				{{end}}
 			</div>
+
+			<div class="dashboard-card">
+            	<div class="section-label"><span>Événements</span></div>
+            	{{if .Events}}
+            	<ul class="event-list">
+            		{{range .Events}}
+                        <li class="event-item{{if .IsPast}} past{{end}}">
+                            <span class="event-bar"></span>
+                            <div>
+                                <strong>{{.Title}}</strong>
+                                <div class="event-date">{{.DateLabel}}{{if .IsPast}} · Passé{{end}}</div>
+                            </div>
+                        </li>
+            		{{end}}
+            	</ul>
+            	{{else}}
+            	<p class="no-meals-label">Aucun événement cette semaine.</p>
+            	{{end}}
+            </div>
 		</div>
 
 		<h2 class="section-title">Modules</h2>

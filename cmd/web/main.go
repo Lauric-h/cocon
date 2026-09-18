@@ -7,13 +7,21 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
+	calendarpkg "cocon/internal/calendar"
 	"cocon/internal/handlers"
 	"cocon/internal/store"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	ctx := context.Background()
+	if err := godotenv.Load(); err != nil {
+		log.Println("pas de fichier .env trouvé, on continue avec l'environnement système")
+	}
+
 	dbPath := os.Getenv("DB_PATH")
 	if dbPath == "" {
 		dbPath = "./data/cocon.db"
@@ -33,6 +41,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	calendarClient := calendarpkg.NewClient(os.Getenv("GOOGLE_CALENDAR_ICS_URL"))
+	log.Printf("%s\n", os.Getenv("GOOGLE_CALENDAR_ICS_URL"))
+
+	if events, err := calendarClient.EventsBetween(time.Now(), time.Now().AddDate(0, 0, 7)); err != nil {
+		log.Println("erreur calendrier:", err)
+	} else {
+		log.Printf("%d événements trouvés cette semaine: %+v", len(events), events)
+	}
+
 	templates, err := template.ParseGlob("ui/html/*.tmpl")
 	if err != nil {
 		log.Fatal(err)
@@ -46,6 +63,7 @@ func main() {
 		Groceries: &store.GroceryStore{DB: db},
 		Templates: templates,
 		Tasks:     &store.TaskStore{DB: db},
+		Calendar:  calendarClient,
 	}
 
 	port := os.Getenv("PORT")

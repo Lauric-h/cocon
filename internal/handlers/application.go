@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"cocon/internal/calendar"
 	"cocon/internal/store"
 	"html/template"
 	"log"
@@ -12,6 +13,7 @@ type Application struct {
 	Meals     *store.MealStore
 	Groceries *store.GroceryStore
 	Tasks     *store.TaskStore
+	Calendar  *calendar.Client
 	Templates *template.Template
 }
 
