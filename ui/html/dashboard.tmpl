@@ -1,0 +1,73 @@
+{{define "dashboard.tmpl"}}
+<!doctype html>
+<html lang="fr">
+<head>
+	<title>Cocon</title>
+	{{template "head" .}}
+</head>
+<body>
+	{{template "header" "home"}}
+	<main class="dashboard-panel">
+		<p class="eyebrow">{{.TodayLabel}}</p>
+		<h1 class="page-title">Bonjour 👋</h1>
+		<p class="dashboard-subtitle">Voici un aperçu de votre semaine.</p>
+
+		<div class="week-strip-header">
+			<h2 class="section-title">Cette semaine</h2>
+			<span class="eyebrow">{{.WeekRangeLabel}}</span>
+		</div>
+		<div class="week-strip">
+			{{range .WeekDays}}
+			<div class="day-strip-card{{if .IsToday}} today{{end}}">
+				<span class="day-strip-name">{{.DayShort}}</span>
+				<span class="day-strip-num">{{.DayNum}}</span>
+				<div class="day-strip-dots">
+					{{range .MealDots}}<span class="meal-dot {{.}}"></span>{{end}}
+				</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div class="dashboard-columns">
+            {{template "dashboard-tasks.tmpl" .}}
+
+			<div class="dashboard-card">
+				<div class="section-label"><span>Aujourd'hui</span></div>
+				{{if .TodayMeals}}
+				<ul class="grocery-list">
+					{{range .TodayMeals}}
+					<li class="grocery-item">
+						<span class="meal-dot {{if eq .MealSlot "petit-déjeuner"}}breakfast{{else if eq .MealSlot "midi"}}noon{{else}}dinner{{end}}"></span>
+						<span class="name">{{.MealSlot}}<br><strong>{{.Dish}}</strong></span>
+					</li>
+					{{end}}
+				</ul>
+				{{else}}
+				<p class="no-meals-label">Aucun repas planifié aujourd'hui.</p>
+				{{end}}
+			</div>
+		</div>
+
+		<h2 class="section-title">Modules</h2>
+		<div class="module-grid">
+			<a href="/planned-meals" class="module-tile">
+				<span class="module-icon">🍽️</span>
+				<span>
+					<strong>Repas &amp; Courses</strong>
+					<small>{{.GroceriesLeft}} article{{if ne .GroceriesLeft 1}}s{{end}} à acheter</small>
+				</span>
+				<span class="module-arrow">→</span>
+			</a>
+			<a href="/tasks" class="module-tile">
+				<span class="module-icon">✅</span>
+				<span>
+					<strong>Tâches</strong>
+					<small>{{.TasksRemaining}} en attente</small>
+				</span>
+				<span class="module-arrow">→</span>
+			</a>
+		</div>
+	</main>
+</body>
+</html>
+{{end}}

@@ -41,7 +41,7 @@ func (app *Application) createTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.renderWeekTasks(w, startOfWeek(time.Now()))
+	app.renderAllTasks(w)
 }
 
 func (app *Application) toggleTaskOccurrence(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +54,7 @@ func (app *Application) toggleTaskOccurrence(w http.ResponseWriter, r *http.Requ
 		app.serverError(w, err)
 		return
 	}
-	app.renderWeekTasks(w, startOfWeek(time.Now()))
+	app.renderAllTasks(w)
 }
 
 func (app *Application) deleteTask(w http.ResponseWriter, r *http.Request) {
@@ -67,15 +67,56 @@ func (app *Application) deleteTask(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	app.renderWeekTasks(w, startOfWeek(time.Now()))
+	app.renderAllTasks(w)
 }
 
-// renderWeekTasks recharge et affiche le fragment liste — réutilisé par toutes les actions tâches.
-func (app *Application) renderWeekTasks(w http.ResponseWriter, weekStart time.Time) {
-	view, err := app.getWeekTasksView(weekStart)
+func (app *Application) renderAllTasks(w http.ResponseWriter) {
+	view, err := app.getAllTasksView()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 	app.render(w, http.StatusOK, "task-list.tmpl", view)
+}
+
+func (app *Application) planTask(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "formulaire invalide", http.StatusBadRequest)
+		return
+	}
+	dueDate, err := time.Parse("2006-01-02", r.PostForm.Get("due_date"))
+	if err != nil {
+		http.Error(w, "date invalide", http.StatusBadRequest)
+		return
+	}
+
+	if err := app.Tasks.SetDueDate(id, dueDate); err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.renderAllTasks(w)
+}
+
+func (app *Application) toggleDashboardTaskOccurrence(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+	if err := app.Tasks.ToggleOccurrenceDone(id); err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	view, err := app.getDashboardTasksView()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.render(w, http.StatusOK, "dashboard-tasks.tmpl", view)
 }

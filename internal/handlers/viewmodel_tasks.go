@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"cocon/internal/models"
-	"time"
 )
 
 var taskCategoryLabels = map[models.TaskCategory]string{
@@ -18,37 +17,66 @@ type TaskItemView struct {
 	ID            int
 	Title         string
 	CategoryLabel string
+	DueDate       string // "2006-01-02", "" si backlog — pour filtrage/tri
+	DueDateLabel  string // "Mardi 15/09" — pour affichage
 	Done          bool
-	OccurrenceID  int // 0 si pas d'occurrence (ne devrait pas arriver pour une tâche avec échéance)
+	OccurrenceID  int
 }
 
-type weekTasksView struct {
-	Items []TaskItemView
+type allTasksView struct {
+	Planned []TaskItemView // ont une échéance
+	Backlog []TaskItemView // pas de date, "de fond"
 }
 
-func (app *Application) getWeekTasksView(weekStart time.Time) (weekTasksView, error) {
-	tasks, err := app.Tasks.ListDueBetween(weekStart, weekStart.AddDate(0, 0, 6))
+func (app *Application) getAllTasksView() (allTasksView, error) {
+	planned, err := app.Tasks.ListPlanned()
 	if err != nil {
-		return weekTasksView{}, err
+		return allTasksView{}, err
+	}
+	backlog, err := app.Tasks.ListBacklog()
+	if err != nil {
+		return allTasksView{}, err
 	}
 
-	var items []TaskItemView
-	for _, task := range tasks {
-		occ, err := app.Tasks.GetOccurrenceForTask(task.ID)
+	view := allTasksView{}
+
+	for _, task := range planned {
+		item, err := app.buildTaskItemView(task)
 		if err != nil {
-			return weekTasksView{}, err
+			return allTasksView{}, err
 		}
-		item := TaskItemView{
-			ID:            task.ID,
-			Title:         task.Title,
-			CategoryLabel: taskCategoryLabels[task.TaskCategory],
+		view.Planned = append(view.Planned, item)
+	}
+	for _, task := range backlog {
+		item, err := app.buildTaskItemView(task)
+		if err != nil {
+			return allTasksView{}, err
 		}
-		if occ != nil {
-			item.OccurrenceID = occ.ID
-			item.Done = occ.Done
-		}
-		items = append(items, item)
+		view.Backlog = append(view.Backlog, item)
 	}
 
-	return weekTasksView{Items: items}, nil
+	return view, nil
+}
+
+func (app *Application) buildTaskItemView(task models.Task) (TaskItemView, error) {
+	item := TaskItemView{
+		ID:            task.ID,
+		Title:         task.Title,
+		CategoryLabel: taskCategoryLabels[task.TaskCategory],
+	}
+	if task.DueDate != nil {
+		item.DueDate = task.DueDate.Format("2006-01-02")
+		item.DueDateLabel = frenchDayFull(*task.DueDate) + " " + task.DueDate.Format("02/01")
+	}
+
+	occ, err := app.Tasks.GetOccurrenceForTask(task.ID)
+	if err != nil {
+		return item, err
+	}
+	if occ != nil {
+		item.OccurrenceID = occ.ID
+		item.Done = occ.Done
+	}
+
+	return item, nil
 }

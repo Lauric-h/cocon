@@ -61,6 +61,12 @@ func (t *TaskStore) ListDueBetween(start, end time.Time) ([]models.Task, error) 
 		ORDER BY due_date ASC`, start.Format("2006-01-02"), end.Format("2006-01-02"))
 }
 
+func (t *TaskStore) ListPlanned() ([]models.Task, error) {
+	return t.query(`
+		SELECT id, title, description, category, due_date, assigned_to, source
+		FROM tasks WHERE due_date IS NOT NULL ORDER BY due_date ASC`)
+}
+
 func (t *TaskStore) query(query string, args ...any) ([]models.Task, error) {
 	rows, err := t.DB.Query(query, args...)
 	if err != nil {
@@ -143,6 +149,14 @@ func (t *TaskStore) ToggleOccurrenceDone(id int) error {
 		WHERE id = ?
 	`, time.Now().Format(time.RFC3339), id)
 	return err
+}
+
+func (t *TaskStore) SetDueDate(id int, dueDate time.Time) error {
+	_, err := t.DB.Exec(`UPDATE tasks SET due_date = ? WHERE id = ?`, dueDate.Format("2006-01-02"), id)
+	if err != nil {
+		return err
+	}
+	return t.EnsureOccurrence(id, dueDate)
 }
 
 // --- helpers (partagés avec store/meals.go — déjà présents si nullableDate/parseNullableDate existent) ---

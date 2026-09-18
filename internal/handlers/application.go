@@ -20,6 +20,9 @@ func (app *Application) Routes() http.Handler {
 
 	mux.Handle("GET /static/", http.StripPrefix("/static", http.FileServer(http.Dir("./ui/static/"))))
 
+	mux.HandleFunc("GET /{$}", app.dashboardPage)
+	mux.HandleFunc("POST /dashboard/tasks/occurrences/{id}/toggle", app.toggleDashboardTaskOccurrence)
+
 	mux.HandleFunc("GET /planned-meals", app.plannedMeals)
 	mux.HandleFunc("POST /meals", app.upsertMeal)
 	mux.HandleFunc("POST /meals/{id}/delete", app.deleteMeal)
@@ -29,10 +32,12 @@ func (app *Application) Routes() http.Handler {
 	mux.HandleFunc("POST /groceries/{id}/delete", app.deleteGrocery)
 	mux.HandleFunc("POST /groceries/clear-checked", app.clearCheckedGroceries)
 
+	mux.HandleFunc("GET /tasks", app.tasksPage)
 	mux.HandleFunc("POST /tasks", app.createTask)
 	mux.HandleFunc("POST /tasks/occurrences/{id}/toggle", app.toggleTaskOccurrence)
 	mux.HandleFunc("POST /tasks/{id}/delete", app.deleteTask)
-	
+	mux.HandleFunc("POST /tasks/{id}/plan", app.planTask)
+
 	return mux
 }
 

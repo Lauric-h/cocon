@@ -1,0 +1,39 @@
+{{define "task-list.tmpl"}}
+<div id="task-list-wrapper">
+	<h2 class="section-title">Planifiées</h2>
+	{{if .Planned}}
+	<ul class="grocery-list">
+		{{range .Planned}}
+		<li class="grocery-item{{if .Done}} checked{{end}}">
+			<input type="checkbox" class="grocery-checkbox" {{if .Done}}checked{{end}}
+				{{if .OccurrenceID}}hx-post="/tasks/occurrences/{{.OccurrenceID}}/toggle" hx-target="#task-list-wrapper" hx-swap="outerHTML"{{end}}>
+			<span class="name">{{.Title}} <small>({{.DueDateLabel}})</small></span>
+			{{if .CategoryLabel}}<span class="qty">{{.CategoryLabel}}</span>{{end}}
+			<a href="#" class="delete" hx-post="/tasks/{{.ID}}/delete" hx-target="#task-list-wrapper" hx-swap="outerHTML" hx-confirm="Supprimer cette tâche ?">✕</a>
+		</li>
+		{{end}}
+	</ul>
+	{{else}}
+	<p class="no-meals-label">Aucune tâche planifiée.</p>
+	{{end}}
+
+	<h2 class="section-title">De fond (sans date)</h2>
+    	{{if .Backlog}}
+    	<ul class="grocery-list">
+    		{{range .Backlog}}
+    		<li class="grocery-item">
+    			<span class="name">{{.Title}}</span>
+    			{{if .CategoryLabel}}<span class="qty">{{.CategoryLabel}}</span>{{end}}
+    			<form hx-post="/tasks/{{.ID}}/plan" hx-target="#task-list-wrapper" hx-swap="outerHTML" style="display:flex; gap:0.4rem; align-items:center; margin:0;">
+    				<input type="date" name="due_date" required>
+    				<button type="submit" title="Planifier">📅</button>
+    			</form>
+    			<a href="#" class="delete" hx-post="/tasks/{{.ID}}/delete" hx-target="#task-list-wrapper" hx-swap="outerHTML" hx-confirm="Supprimer cette tâche ?">✕</a>
+    		</li>
+    		{{end}}
+    	</ul>
+    {{else}}
+        <p class="no-meals-label">Aucune tâche de fond.</p>
+    {{end}}
+</div>
+{{end}}

@@ -96,6 +96,69 @@ input:focus, textarea:focus { outline: none; }
     margin: 0 0 2rem;
 }
 
+.app-header { justify-content: space-between; }
+.nav-group { flex: 1; display: flex; justify-content: center; gap: 0.5rem; }
+
+.nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-ink-muted);
+}
+.nav-pill:hover:not(.active) { background: var(--color-cream-dark); }
+.nav-pill.active {
+    background: var(--color-terracotta-muted);
+    color: var(--color-terracotta);
+}
+
+.avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--color-terracotta-muted);
+    color: var(--color-terracotta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* --- Dashboard --- */
+.dashboard-panel { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.dashboard-subtitle { color: var(--color-ink-muted); margin: 0 0 2rem; }
+
+.week-strip-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem; }
+.week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
+.day-strip-card {
+    background: #fff; border: 1px solid var(--color-border); border-radius: 0.75rem;
+    padding: 0.75rem; text-align: center; display: flex; flex-direction: column; gap: 0.4rem;
+}
+.day-strip-card.today { border: 1.5px solid var(--color-terracotta-light); background: #FFF8F5; }
+.day-strip-name { font-size: 0.7rem; color: var(--color-ink-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.day-strip-num { font-family: var(--font-serif); font-size: 1.5rem; }
+.day-strip-dots { display: flex; justify-content: center; gap: 0.25rem; min-height: 8px; }
+
+.dashboard-columns { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.dashboard-card { background: #fff; border: 1px solid var(--color-border); border-radius: 1rem; padding: 1.25rem; }
+.pill-count { background: var(--color-terracotta-muted); color: var(--color-terracotta); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.75rem; font-weight: 500; }
+.see-all { color: var(--color-terracotta); font-size: 0.85rem; text-decoration: none; }
+
+.module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.module-tile {
+    display: flex; align-items: center; gap: 1rem; background: #fff;
+    border: 1px solid var(--color-border); border-radius: 1rem; padding: 1rem 1.25rem;
+    text-decoration: none; color: var(--color-ink);
+}
+.module-tile small { display: block; color: var(--color-ink-muted); font-size: 0.8rem; font-weight: normal; }
+.module-icon { font-size: 1.5rem; }
+.module-arrow { margin-left: auto; color: var(--color-ink-muted); }
+
 /* --- Day cards --- */
 .day-card {
     border-radius: 1rem;
@@ -228,6 +291,8 @@ input:focus, textarea:focus { outline: none; }
     margin: 0.5rem 0;
 }
 .section-label a { color: var(--color-terracotta); font-size: 0.75rem; text-transform: none; letter-spacing: normal; }
+.section-title {
+    font-family: var(--font-serif), serif; font-size: 1.1rem; margin: 1.5rem 0 0.75rem; }
 
 .grocery-list { list-style: none; margin: 0 0 1rem; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }
 .grocery-item {
@@ -277,3 +342,5 @@ input:focus, textarea:focus { outline: none; }
 
 /* --- Feedback visuel après sauvegarde --- */
 .meal-input.htmx-settling, .grocery-list.htmx-settling { background-color: var(--color-sage-light); transition: background-color 1s ease-out; }
+
+.tasks-panel { max-width: 640px; margin: 0 auto; padding: 2rem; }

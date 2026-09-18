@@ -1,0 +1,23 @@
+{{define "dashboard-tasks.tmpl"}}
+<div id="dashboard-tasks" class="dashboard-card">
+	<div class="section-label">
+		<span>Tâches</span>
+		<span class="pill-count">{{.TasksRemaining}} restante{{if ne .TasksRemaining 1}}s{{end}}</span>
+	</div>
+	{{if .TasksPreview}}
+	<ul class="grocery-list">
+		{{range .TasksPreview}}
+		<li class="grocery-item{{if .Done}} checked{{end}}">
+			<input type="checkbox" class="grocery-checkbox" {{if .Done}}checked{{end}}
+				{{if .OccurrenceID}}hx-post="/dashboard/tasks/occurrences/{{.OccurrenceID}}/toggle" hx-target="#dashboard-tasks" hx-swap="outerHTML"{{end}}>
+			<span class="name">{{.Title}}</span>
+			{{if .CategoryLabel}}<span class="qty">{{.CategoryLabel}}</span>{{end}}
+		</li>
+		{{end}}
+	</ul>
+	<a href="/tasks" class="see-all">Voir tout →</a>
+	{{else}}
+	<p class="no-meals-label">Aucune tâche pour l'instant.</p>
+	{{end}}
+</div>
+{{end}}

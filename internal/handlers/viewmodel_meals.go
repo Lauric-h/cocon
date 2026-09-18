@@ -70,3 +70,14 @@ func (app *Application) getPlannedMealsView(weekStart time.Time) (plannedMealsVi
 
 	return plannedMealsView{WeekStart: weekStart, Days: days}, nil
 }
+
+func mealDotClass(slot models.MealSlot) string {
+	switch slot {
+	case models.MealSlotBreakfast:
+		return "breakfast"
+	case models.MealSlotNoon:
+		return "noon"
+	default:
+		return "dinner"
+	}
+}
