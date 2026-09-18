@@ -1,39 +1,119 @@
 {{define "task-list.tmpl"}}
 <div id="task-list-wrapper">
-	<h2 class="section-title">Planifiées</h2>
-	{{if .Planned}}
-	<ul class="grocery-list">
-		{{range .Planned}}
-		<li class="grocery-item{{if .Done}} checked{{end}}">
-			<input type="checkbox" class="grocery-checkbox" {{if .Done}}checked{{end}}
-				{{if .OccurrenceID}}hx-post="/tasks/occurrences/{{.OccurrenceID}}/toggle" hx-target="#task-list-wrapper" hx-swap="outerHTML"{{end}}>
-			<span class="name">{{.Title}} <small>({{.DueDateLabel}})</small></span>
-			{{if .CategoryLabel}}<span class="qty">{{.CategoryLabel}}</span>{{end}}
-			<a href="#" class="delete" hx-post="/tasks/{{.ID}}/delete" hx-target="#task-list-wrapper" hx-swap="outerHTML" hx-confirm="Supprimer cette tâche ?">✕</a>
-		</li>
-		{{end}}
-	</ul>
-	{{else}}
-	<p class="no-meals-label">Aucune tâche planifiée.</p>
-	{{end}}
 
-	<h2 class="section-title">De fond (sans date)</h2>
-    	{{if .Backlog}}
-    	<ul class="grocery-list">
-    		{{range .Backlog}}
-    		<li class="grocery-item">
-    			<span class="name">{{.Title}}</span>
-    			{{if .CategoryLabel}}<span class="qty">{{.CategoryLabel}}</span>{{end}}
-    			<form hx-post="/tasks/{{.ID}}/plan" hx-target="#task-list-wrapper" hx-swap="outerHTML" style="display:flex; gap:0.4rem; align-items:center; margin:0;">
-    				<input type="date" name="due_date" required>
-    				<button type="submit" title="Planifier">📅</button>
-    			</form>
-    			<a href="#" class="delete" hx-post="/tasks/{{.ID}}/delete" hx-target="#task-list-wrapper" hx-swap="outerHTML" hx-confirm="Supprimer cette tâche ?">✕</a>
-    		</li>
-    		{{end}}
-    	</ul>
-    {{else}}
-        <p class="no-meals-label">Aucune tâche de fond.</p>
-    {{end}}
+    <section class="task-section">
+        <div class="task-section-header">
+            <h2 class="section-title">Planifiées</h2>
+            {{if .Planned}}
+                <span class="task-count">{{len .Planned}}</span>
+            {{end}}
+        </div>
+
+        {{if .Planned}}
+        <ul class="task-list">
+            {{range .Planned}}
+            <li class="task-item{{if .Done}} checked{{end}}">
+
+                <input
+                    type="checkbox"
+                    class="task-checkbox"
+                    {{if .Done}}checked{{end}}
+                    {{if .OccurrenceID}}
+                        hx-post="/tasks/occurrences/{{.OccurrenceID}}/toggle"
+                        hx-target="#task-list-wrapper"
+                        hx-swap="outerHTML"
+                    {{end}}
+                >
+
+                <div class="task-content">
+                    <span class="task-name">{{.Title}}</span>
+
+                    <div class="task-meta">
+                        {{if .DueDateLabel}}
+                            <span class="task-date">{{.DueDateLabel}}</span>
+                        {{end}}
+
+                        {{if .CategoryLabel}}
+                            <span class="task-category">{{.CategoryLabel}}</span>
+                        {{end}}
+                    </div>
+                </div>
+
+                <a
+                    href="#"
+                    class="task-delete"
+                    hx-post="/tasks/{{.ID}}/delete"
+                    hx-target="#task-list-wrapper"
+                    hx-swap="outerHTML"
+                    hx-confirm="Supprimer cette tâche ?"
+                >✕</a>
+
+            </li>
+            {{end}}
+        </ul>
+        {{else}}
+            <p class="task-empty">Aucune tâche planifiée.</p>
+        {{end}}
+    </section>
+
+
+    <section class="task-section">
+        <div class="task-section-header">
+            <h2 class="section-title">De fond</h2>
+
+            <span class="task-section-hint">Sans date</span>
+        </div>
+
+        {{if .Backlog}}
+        <ul class="task-list">
+            {{range .Backlog}}
+            <li class="task-item">
+
+                <div class="task-content">
+                    <span class="task-name">{{.Title}}</span>
+
+                    {{if .CategoryLabel}}
+                    <div class="task-meta">
+                        <span class="task-category">{{.CategoryLabel}}</span>
+                    </div>
+                    {{end}}
+                </div>
+
+                <form
+                    class="task-plan-form"
+                    hx-post="/tasks/{{.ID}}/plan"
+                    hx-target="#task-list-wrapper"
+                    hx-swap="outerHTML"
+                >
+                    <input
+                        type="date"
+                        name="due_date"
+                        required
+                        title="Date"
+                    >
+
+                    <button
+                        type="submit"
+                        title="Planifier"
+                    >📅</button>
+                </form>
+
+                <a
+                    href="#"
+                    class="task-delete"
+                    hx-post="/tasks/{{.ID}}/delete"
+                    hx-target="#task-list-wrapper"
+                    hx-swap="outerHTML"
+                    hx-confirm="Supprimer cette tâche ?"
+                >✕</a>
+
+            </li>
+            {{end}}
+        </ul>
+        {{else}}
+            <p class="task-empty">Aucune tâche de fond.</p>
+        {{end}}
+    </section>
+
 </div>
 {{end}}

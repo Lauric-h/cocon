@@ -2,31 +2,49 @@
 <!doctype html>
 <html lang="fr">
 <head>
-	<title>Tâches — Cocon</title>
-	{{template "head" .}}
+    <title>Tâches — Cocon</title>
+    {{template "head" .}}
 </head>
 <body>
     {{template "header" "tasks"}}
-	<main class="tasks-panel">
-		<p class="eyebrow">Cette semaine</p>
-		<h1 class="page-title">Tâches</h1>
 
-		<form class="add-item-bar" hx-post="/tasks" hx-target="#task-list-wrapper" hx-swap="outerHTML" hx-on::after-request="this.reset()">
-			<input type="text" name="title" placeholder="Nouvelle tâche…" required>
-			<select name="category">
-				<option value="house">Maison</option>
-				<option value="car">Voiture</option>
-				<option value="school">École</option>
-				<option value="admin">Admin</option>
-				<option value="family">Famille</option>
-				<option value="meal">Repas</option>
-			</select>
-			<input type="date" name="due_date">
-			<button type="submit">+</button>
-		</form>
+    <main class="tasks-panel">
+        <p class="eyebrow">Cette semaine</p>
+        <h1 class="page-title">Tâches</h1>
 
-		{{template "task-list.tmpl" .}}
-	</main>
+        <form
+            class="task-add-bar"
+            hx-post="/tasks"
+            hx-target="#task-list-wrapper"
+            hx-swap="outerHTML"
+            hx-on::after-request="this.reset()"
+        >
+            <input
+                type="text"
+                name="title"
+                placeholder="Nouvelle tâche…"
+                required
+            >
+
+            <select name="category">
+                <option value="house">Maison</option>
+                <option value="car">Voiture</option>
+                <option value="school">École</option>
+                <option value="admin">Admin</option>
+                <option value="family">Famille</option>
+                <option value="meal">Repas</option>
+            </select>
+
+            <input
+                type="date"
+                name="due_date"
+            >
+
+            <button type="submit" title="Ajouter">+</button>
+        </form>
+
+        {{template "task-list.tmpl" .}}
+    </main>
 </body>
 </html>
 {{end}}

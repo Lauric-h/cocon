@@ -1,17 +1,15 @@
 package main
 
 import (
+	calendarpkg "cocon/internal/calendar"
+	"cocon/internal/handlers"
+	"cocon/internal/store"
 	"context"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
-
-	calendarpkg "cocon/internal/calendar"
-	"cocon/internal/handlers"
-	"cocon/internal/store"
 
 	"github.com/joho/godotenv"
 )
@@ -42,13 +40,6 @@ func main() {
 	}
 
 	calendarClient := calendarpkg.NewClient(os.Getenv("GOOGLE_CALENDAR_ICS_URL"))
-	log.Printf("%s\n", os.Getenv("GOOGLE_CALENDAR_ICS_URL"))
-
-	if events, err := calendarClient.EventsBetween(time.Now(), time.Now().AddDate(0, 0, 7)); err != nil {
-		log.Println("erreur calendrier:", err)
-	} else {
-		log.Printf("%d événements trouvés cette semaine: %+v", len(events), events)
-	}
 
 	templates, err := template.ParseGlob("ui/html/*.tmpl")
 	if err != nil {

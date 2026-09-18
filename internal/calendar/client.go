@@ -3,7 +3,6 @@ package calendar
 import (
 	"cocon/internal/models"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -60,34 +59,43 @@ func (c *Client) fetch() ([]models.Event, error) {
 		return nil, fmt.Errorf("fetch ics: %w", err)
 	}
 	defer resp.Body.Close()
-	log.Println("HTTP status:", resp.StatusCode) // ← ajout
 
 	cal, err := ical.ParseCalendar(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("parse ics: %w", err)
 	}
-	log.Println("composants VEVENT bruts trouvés:", len(cal.Events())) // ← ajout
+
+	paris, err := time.LoadLocation("Europe/Paris")
+	if err != nil {
+		return nil, fmt.Errorf("load timezone Europe/Paris: %w", err)
+	}
 
 	var events []models.Event
+
 	for _, comp := range cal.Events() {
 		summary := comp.GetProperty(ical.ComponentPropertySummary)
+
 		start, errStart := comp.GetStartAt()
 		if summary == nil || errStart != nil {
-			log.Println("événement ignoré — summary nil ou erreur start:", errStart) // ← ajout
 			continue
 		}
-		end, _ := comp.GetEndAt()
-		log.Printf("événement lu: %q le %v", summary.Value, start) // ← ajout
+
+		end, err := comp.GetEndAt()
+		if err != nil {
+			continue
+		}
 
 		events = append(events, models.Event{
-			Title: summary.Value,
-			Start: start,
-			End:   end,
+			Title:  summary.Value,
+			Start:  start.In(paris),
+			End:    end.In(paris),
+			Author: eventAuthor(comp),
 		})
 	}
 
 	c.cached = events
 	c.fetchedAt = time.Now()
+
 	return events, nil
 }
 
