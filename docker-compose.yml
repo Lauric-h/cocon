@@ -1,0 +1,17 @@
+services:
+  cocon:
+    image: ghcr.io/TON_USER/cocon:latest
+    container_name: cocon
+    restart: unless-stopped
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      DB_PATH: /data/cocon.db
+      PORT: 8081
+      TZ: Europe/Paris
+      GOOGLE_CALENDAR_ICS_URL: ${GOOGLE_CALENDAR_ICS_URL}
+
+    volumes:
+      - ./data:/data
