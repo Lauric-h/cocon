@@ -16,18 +16,28 @@
 			<h2 class="section-title">Cette semaine</h2>
 			<span class="eyebrow">{{.WeekRangeLabel}}</span>
 		</div>
-		<div class="week-strip">
-			{{range .WeekDays}}
-			<div class="day-strip-card{{if .IsToday}} today{{end}}">
-				<span class="day-strip-name">{{.DayShort}}</span>
-				<span class="day-strip-num">{{.DayNum}}</span>
-				<div class="day-strip-dots">
-					{{range .MealDots}}<span class="meal-dot {{.}}"></span>{{end}}
-					{{if .HasEvent}}<span class="meal-dot event"></span>{{end}}
-				</div>
-			</div>
-			{{end}}
-		</div>
+        <div class="week-strip">
+            {{range .WeekDays}}
+            <div class="day-strip-card{{if .IsToday}} today{{end}}">
+                <div class="day-strip-header">
+                    <span class="day-strip-name">{{.DayShort}}</span>
+                    <span class="day-strip-num">{{.DayNum}}</span>
+                </div>
+                <div class="day-strip-body">
+                    {{range .Events}}
+                    <div class="day-event-chip">
+                        <strong>{{.Title}}</strong>
+                        <span>{{.TimeLabel}}</span>
+                    </div>
+                    {{end}}
+                    {{if .MoreCount}}<span class="day-event-more">+{{.MoreCount}} autre{{if ne .MoreCount 1}}s{{end}}</span>{{end}}
+                    <div class="day-strip-dots">
+                        {{range .MealDots}}<span class="meal-dot {{.}}"></span>{{end}}
+                    </div>
+                </div>
+            </div>
+            {{end}}
+        </div>
 
 		<div class="dashboard-columns">
             {{template "dashboard-tasks.tmpl" .}}

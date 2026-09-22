@@ -6,13 +6,21 @@ import (
 	"time"
 )
 
-type WeekDayStripView struct {
-	DayShort string // "LUN"
-	DayNum   string // "14"
-	IsToday  bool
-	MealDots []string // classes CSS : "breakfast", "noon", "dinner"
-	HasEvent bool
+type EventChipView struct {
+	Title     string
+	TimeLabel string
 }
+
+type WeekDayStripView struct {
+	DayShort  string
+	DayNum    string
+	IsToday   bool
+	MealDots  []string
+	Events    []EventChipView
+	MoreCount int
+}
+
+const maxEventsPerDay = 1
 
 type dashboardTasksView struct {
 	TasksRemaining int
@@ -83,16 +91,24 @@ func (app *Application) getDashboardView() (dashboardView, error) {
 	sort.Slice(upcoming, func(i, j int) bool { return upcoming[i].Start.Before(upcoming[j].Start) })
 	sort.Slice(past, func(i, j int) bool { return past[i].Start.Before(past[j].Start) })
 
-	eventDaysWithEvent := make(map[string]bool)
+	eventsByDay := make(map[string][]EventChipView)
 	for _, ev := range upcoming {
-		eventDaysWithEvent[ev.Start.Format("2006-01-02")] = true
+		dateStr := ev.Start.Format("2006-01-02")
+		eventsByDay[dateStr] = append(eventsByDay[dateStr], EventChipView{
+			Title:     ev.Title,
+			TimeLabel: eventTimeLabel(ev),
+		})
 		view.Events = append(view.Events, EventView{
 			Title:     ev.Title,
 			DateLabel: eventDateLabel(ev),
 		})
 	}
 	for _, ev := range past {
-		eventDaysWithEvent[ev.Start.Format("2006-01-02")] = true
+		dateStr := ev.Start.Format("2006-01-02")
+		eventsByDay[dateStr] = append(eventsByDay[dateStr], EventChipView{
+			Title:     ev.Title,
+			TimeLabel: eventTimeLabel(ev),
+		})
 		view.Events = append(view.Events, EventView{
 			Title:     ev.Title,
 			DateLabel: eventDateLabel(ev),
@@ -102,12 +118,20 @@ func (app *Application) getDashboardView() (dashboardView, error) {
 
 	for _, day := range mealsView.Days {
 		dateStr := day.Date.Format("2006-01-02")
+		dayEvents := eventsByDay[dateStr]
+
 		strip := WeekDayStripView{
 			DayShort: frenchDayShort(day.Date),
 			DayNum:   day.Date.Format("2"),
 			IsToday:  dateStr == today,
-			HasEvent: eventDaysWithEvent[dateStr],
 		}
+		if len(dayEvents) > maxEventsPerDay {
+			strip.Events = dayEvents[:maxEventsPerDay]
+			strip.MoreCount = len(dayEvents) - maxEventsPerDay
+		} else {
+			strip.Events = dayEvents
+		}
+
 		for _, cell := range day.Cells {
 			if cell.Dish == "" {
 				continue
@@ -123,12 +147,15 @@ func (app *Application) getDashboardView() (dashboardView, error) {
 	return view, nil
 }
 
-func eventDateLabel(ev models.Event) string {
-	label := frenchDayShort(ev.Start) + " " + ev.Start.Format("02/01")
+func eventTimeLabel(ev models.Event) string {
 	if ev.AllDay {
-		return label + " · Toute la journée"
+		return "Toute la journée"
 	}
-	return label + " · " + ev.Start.Format("15h04")
+	return ev.Start.Format("15h04")
+}
+
+func eventDateLabel(ev models.Event) string {
+	return frenchDayShort(ev.Start) + " " + ev.Start.Format("02/01") + " · " + eventTimeLabel(ev)
 }
 
 func (app *Application) getDashboardTasksView() (dashboardTasksView, error) {
