@@ -1,11 +1,35 @@
 package handlers
 
 import (
+	"cocon/internal/handlers/view"
+	"cocon/internal/helpers"
 	"cocon/internal/models"
 	"net/http"
 	"strconv"
 	"time"
 )
+
+func (app *Application) plannedMeals(w http.ResponseWriter, r *http.Request) {
+	weekStart := helpers.StartOfWeek(time.Now())
+
+	mealsView, err := view.BuildPlannedMeals(app.Meals, weekStart)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	groceriesView, err := view.BuildGroceries(app.Groceries)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.render(w, http.StatusOK, "planned_meals.tmpl", map[string]any{
+		"WeekStart": mealsView.WeekStart,
+		"Days":      mealsView.Days,
+		"Groceries": groceriesView,
+	})
+}
 
 func (app *Application) upsertMeal(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {

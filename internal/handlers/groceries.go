@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"cocon/internal/handlers/view"
 	"net/http"
 	"strconv"
 )
@@ -64,12 +65,12 @@ func (app *Application) clearCheckedGroceries(w http.ResponseWriter, r *http.Req
 }
 
 func (app *Application) renderGroceryList(w http.ResponseWriter) {
-	view, err := app.getGroceriesView()
+	groceriesView, err := view.BuildGroceries(app.Groceries)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-	app.render(w, http.StatusOK, "grocery-list.tmpl", view)
+	app.render(w, http.StatusOK, "grocery-list.tmpl", groceriesView)
 }
 
 func parseOptionalQuantity(raw string) (*int, error) {
