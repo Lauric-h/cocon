@@ -7,7 +7,12 @@
 </head>
 <body>
 	{{template "header" "home"}}
-	<main class="dashboard-panel">
+
+	<!-- =========================
+	     DESKTOP
+	     ========================= -->
+	<main class="dashboard-panel dashboard-desktop">
+
 		<p class="eyebrow">{{.TodayLabel}}</p>
 		<h1 class="page-title">Bonjour 👋</h1>
 		<p class="dashboard-subtitle">Voici un aperçu de votre semaine.</p>
@@ -16,40 +21,57 @@
 			<h2 class="section-title">Cette semaine</h2>
 			<span class="eyebrow">{{.WeekRangeLabel}}</span>
 		</div>
-        <div class="week-strip">
-            {{range .WeekDays}}
-            <div class="day-strip-card{{if .IsToday}} today{{end}}">
-                <div class="day-strip-header">
-                    <span class="day-strip-name">{{.DayShort}}</span>
-                    <span class="day-strip-num">{{.DayNum}}</span>
-                </div>
-                <div class="day-strip-body">
-                    {{range .Events}}
-                    <div class="day-event-chip">
-                        <strong>{{.Title}}</strong>
-                        <span>{{.TimeLabel}}</span>
-                    </div>
-                    {{end}}
-                    {{if .MoreCount}}<span class="day-event-more">+{{.MoreCount}} autre{{if ne .MoreCount 1}}s{{end}}</span>{{end}}
-                    <div class="day-strip-dots">
-                        {{range .MealDots}}<span class="meal-dot {{.}}"></span>{{end}}
-                    </div>
-                </div>
-            </div>
-            {{end}}
-        </div>
+
+		<div class="week-strip">
+			{{range .WeekDays}}
+			<div class="day-strip-card{{if .IsToday}} today{{end}}">
+				<div class="day-strip-header">
+					<span class="day-strip-name">{{.DayShort}}</span>
+					<span class="day-strip-num">{{.DayNum}}</span>
+				</div>
+
+				<div class="day-strip-body">
+					{{range .Events}}
+					<div class="day-event-chip">
+						<strong>{{.Title}}</strong>
+						<span>{{.TimeLabel}}</span>
+					</div>
+					{{end}}
+
+					{{if .MoreCount}}
+						<span class="day-event-more">
+							+{{.MoreCount}} autre{{if ne .MoreCount 1}}s{{end}}
+						</span>
+					{{end}}
+
+					<div class="day-strip-dots">
+						{{range .MealDots}}
+							<span class="meal-dot {{.}}"></span>
+						{{end}}
+					</div>
+				</div>
+			</div>
+			{{end}}
+		</div>
 
 		<div class="dashboard-columns">
-            {{template "dashboard-tasks.tmpl" .}}
+
+			{{template "dashboard-tasks.tmpl" .}}
 
 			<div class="dashboard-card">
-				<div class="section-label"><span>Aujourd'hui</span></div>
+				<div class="section-label">
+					<span>Aujourd'hui</span>
+				</div>
+
 				{{if .TodayMeals}}
 				<ul class="grocery-list">
 					{{range .TodayMeals}}
 					<li class="grocery-item">
 						<span class="meal-dot {{if eq .MealSlot "petit-déjeuner"}}breakfast{{else if eq .MealSlot "midi"}}noon{{else}}dinner{{end}}"></span>
-						<span class="name">{{.MealSlot}}<br><strong>{{.Dish}}</strong></span>
+						<span class="name">
+							{{.MealSlot}}<br>
+							<strong>{{.Dish}}</strong>
+						</span>
 					</li>
 					{{end}}
 				</ul>
@@ -59,35 +81,47 @@
 			</div>
 
 			<div class="dashboard-card">
-            	<div class="section-label"><span>Événements</span></div>
-            	{{if .Events}}
-            	<ul class="event-list">
-            		{{range .Events}}
-                        <li class="event-item{{if .IsPast}} past{{end}}">
-                            <span class="event-bar"></span>
-                            <div>
-                                <strong>{{.Title}}</strong>
-                                <div class="event-date">{{.DateLabel}}{{if .IsPast}} · Passé{{end}}</div>
-                            </div>
-                        </li>
-            		{{end}}
-            	</ul>
-            	{{else}}
-            	<p class="no-meals-label">Aucun événement cette semaine.</p>
-            	{{end}}
-            </div>
+				<div class="section-label">
+					<span>Événements</span>
+				</div>
+
+				{{if .Events}}
+				<ul class="event-list">
+					{{range .Events}}
+					<li class="event-item{{if .IsPast}} past{{end}}">
+						<span class="event-bar"></span>
+						<div>
+							<strong>{{.Title}}</strong>
+							<div class="event-date">
+								{{.DateLabel}}{{if .IsPast}} · Passé{{end}}
+							</div>
+						</div>
+					</li>
+					{{end}}
+				</ul>
+				{{else}}
+				<p class="no-meals-label">Aucun événement cette semaine.</p>
+				{{end}}
+			</div>
+
 		</div>
 
 		<h2 class="section-title">Modules</h2>
+
 		<div class="module-grid">
 			<a href="/planned-meals" class="module-tile">
 				<span class="module-icon">🍽️</span>
 				<span>
 					<strong>Repas &amp; Courses</strong>
-					<small>{{.GroceriesLeft}} article{{if ne .GroceriesLeft 1}}s{{end}} à acheter</small>
+					<small>
+						{{.GroceriesLeft}}
+						article{{if ne .GroceriesLeft 1}}s{{end}}
+						à acheter
+					</small>
 				</span>
 				<span class="module-arrow">→</span>
 			</a>
+
 			<a href="/tasks" class="module-tile">
 				<span class="module-icon">✅</span>
 				<span>
@@ -97,7 +131,283 @@
 				<span class="module-arrow">→</span>
 			</a>
 		</div>
+
 	</main>
+
+
+	<!-- =========================
+	     MOBILE
+	     ========================= -->
+	<main class="dashboard-mobile">
+
+		<header class="dashboard-mobile-intro">
+			<p class="eyebrow">{{.TodayLabel}}</p>
+			<h1 class="page-title">Bonjour 👋</h1>
+			<p class="dashboard-subtitle">Voici un aperçu de votre journée.</p>
+		</header>
+
+
+		<!-- =====================
+		     AUJOURD'HUI
+		     ===================== -->
+		<section class="mobile-today-card">
+
+			<div class="mobile-card-header">
+				<h2>Aujourd'hui</h2>
+				<span>{{.TodayLabel}}</span>
+			</div>
+
+			<div class="mobile-card-section">
+
+				<div class="mobile-section-label">
+					Repas
+				</div>
+
+				{{if .TodayMeals}}
+
+					<div class="mobile-meals-list">
+						{{range .TodayMeals}}
+
+						<div class="mobile-meal-item">
+							<span class="meal-dot {{if eq .MealSlot "petit-déjeuner"}}breakfast{{else if eq .MealSlot "midi"}}noon{{else}}dinner{{end}}"></span>
+
+							<div>
+								<span class="mobile-meal-slot">
+									{{.MealSlot}}
+								</span>
+
+								<strong>{{.Dish}}</strong>
+							</div>
+						</div>
+
+						{{end}}
+					</div>
+
+				{{else}}
+
+					<p class="mobile-empty">
+						Aucun repas planifié aujourd'hui.
+					</p>
+
+				{{end}}
+
+			</div>
+
+
+			{{if .TodayEvents}}
+			<div class="mobile-card-section mobile-events-section">
+
+				<div class="mobile-section-label">
+					Événements
+				</div>
+
+				<div class="mobile-events-list">
+
+					{{range .TodayEvents}}
+
+					<div class="mobile-event-item{{if .IsPast}} past{{end}}">
+						<span class="mobile-event-bar"></span>
+
+						<div class="mobile-event-content">
+							<strong>{{.Title}}</strong>
+							<span>{{.DateLabel}}{{if .IsPast}} · Passé{{end}}</span>
+						</div>
+					</div>
+
+					{{end}}
+
+				</div>
+
+			</div>
+			{{end}}
+
+		</section>
+
+
+		<!-- =====================
+		     SEMAINE
+		     ===================== -->
+		<details class="mobile-accordion">
+
+			<summary>
+				<div>
+					<strong>Cette semaine</strong>
+					<span>{{.WeekRangeLabel}}</span>
+				</div>
+
+				<span class="accordion-arrow">⌄</span>
+			</summary>
+
+
+			<div class="mobile-week-list">
+
+				{{range .WeekDays}}
+
+				<div class="mobile-week-day{{if .IsToday}} today{{end}}">
+
+					<div class="mobile-week-day-header">
+
+						<div>
+							<span class="mobile-week-day-name">
+								{{.DayShort}}
+							</span>
+
+							<strong>{{.DayNum}}</strong>
+						</div>
+
+						{{if .IsToday}}
+							<span class="today-pill">Aujourd'hui</span>
+						{{end}}
+
+					</div>
+
+
+					<div class="mobile-week-day-content">
+
+						{{range .Events}}
+
+						<div class="day-event-chip">
+							<strong>{{.Title}}</strong>
+							<span>{{.TimeLabel}}</span>
+						</div>
+
+						{{end}}
+
+
+						{{if .MoreCount}}
+						<span class="day-event-more">
+							+{{.MoreCount}} autre{{if ne .MoreCount 1}}s{{end}}
+						</span>
+						{{end}}
+
+
+						{{if .MealDots}}
+						<div class="day-strip-dots">
+							{{range .MealDots}}
+								<span class="meal-dot {{.}}"></span>
+							{{end}}
+						</div>
+						{{end}}
+
+					</div>
+
+				</div>
+
+				{{end}}
+
+			</div>
+
+		</details>
+
+
+		<!-- =====================
+		     TÂCHES
+		     ===================== -->
+		<details class="mobile-accordion">
+
+			<summary>
+				<div>
+					<strong>Tâches</strong>
+					<span>
+						{{.TasksRemaining}}
+						restante{{if ne .TasksRemaining 1}}s{{end}}
+					</span>
+				</div>
+
+				<span class="accordion-arrow">⌄</span>
+			</summary>
+
+
+			<div class="mobile-tasks-content">
+
+				{{if .TasksPreview}}
+
+				<ul class="grocery-list">
+
+					{{range .TasksPreview}}
+
+					<li class="grocery-item{{if .Done}} checked{{end}}">
+
+						<input
+							type="checkbox"
+							class="grocery-checkbox"
+							{{if .Done}}checked{{end}}
+							{{if .OccurrenceID}}
+								hx-post="/dashboard/tasks/occurrences/{{.OccurrenceID}}/toggle"
+								hx-swap="none"
+								hx-on::after-request="window.location.reload()"
+							{{end}}
+						>
+
+						<span class="name">{{.Title}}</span>
+
+						{{if .CategoryLabel}}
+							<span class="qty">{{.CategoryLabel}}</span>
+						{{end}}
+
+					</li>
+
+					{{end}}
+
+				</ul>
+
+				<a href="/tasks" class="see-all">
+					Voir tout →
+				</a>
+
+				{{else}}
+
+				<p class="no-meals-label">
+					Aucune tâche pour l'instant.
+				</p>
+
+				{{end}}
+
+			</div>
+
+		</details>
+
+
+		<!-- =====================
+		     MODULES
+		     ===================== -->
+		<div class="mobile-module-grid">
+
+			<a href="/planned-meals" class="mobile-module-card">
+
+				<span class="mobile-module-icon">🍽️</span>
+
+				<strong>Repas &amp; Courses</strong>
+
+				<small>
+					{{.GroceriesLeft}}
+					article{{if ne .GroceriesLeft 1}}s{{end}}
+					à acheter
+				</small>
+
+				<span class="mobile-module-arrow">→</span>
+
+			</a>
+
+
+			<a href="/tasks" class="mobile-module-card">
+
+				<span class="mobile-module-icon">✅</span>
+
+				<strong>Tâches</strong>
+
+				<small>
+					{{.TasksRemaining}} en attente
+				</small>
+
+				<span class="mobile-module-arrow">→</span>
+
+			</a>
+
+		</div>
+
+	</main>
+
 </body>
 </html>
 {{end}}

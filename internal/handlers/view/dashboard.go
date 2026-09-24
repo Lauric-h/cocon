@@ -36,6 +36,7 @@ type Dashboard struct {
 	WeekRangeLabel string
 	WeekDays       []WeekDay
 	TodayMeals     []MealCell
+	TodayEvents    []Event
 	TasksRemaining int
 	TasksPreview   []TaskItem
 	GroceriesLeft  int
@@ -88,15 +89,56 @@ func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks
 	sort.Slice(past, func(i, j int) bool { return past[i].Start.Before(past[j].Start) })
 
 	eventsByDay := make(map[string][]EventChip)
+
 	for _, ev := range upcoming {
 		dateStr := ev.Start.Format("2006-01-02")
-		eventsByDay[dateStr] = append(eventsByDay[dateStr], EventChip{Title: ev.Title, TimeLabel: eventTimeLabel(ev)})
-		view.Events = append(view.Events, Event{Title: ev.Title, DateLabel: eventDateLabel(ev)})
+
+		chip := EventChip{
+			Title:     ev.Title,
+			TimeLabel: eventTimeLabel(ev),
+		}
+
+		eventsByDay[dateStr] = append(
+			eventsByDay[dateStr],
+			chip,
+		)
+
+		event := Event{
+			Title:     ev.Title,
+			DateLabel: eventDateLabel(ev),
+		}
+
+		view.Events = append(view.Events, event)
+
+		if dateStr == today {
+			view.TodayEvents = append(view.TodayEvents, event)
+		}
 	}
+
 	for _, ev := range past {
 		dateStr := ev.Start.Format("2006-01-02")
-		eventsByDay[dateStr] = append(eventsByDay[dateStr], EventChip{Title: ev.Title, TimeLabel: eventTimeLabel(ev)})
-		view.Events = append(view.Events, Event{Title: ev.Title, DateLabel: eventDateLabel(ev), IsPast: true})
+
+		chip := EventChip{
+			Title:     ev.Title,
+			TimeLabel: eventTimeLabel(ev),
+		}
+
+		eventsByDay[dateStr] = append(
+			eventsByDay[dateStr],
+			chip,
+		)
+
+		event := Event{
+			Title:     ev.Title,
+			DateLabel: eventDateLabel(ev),
+			IsPast:    true,
+		}
+
+		view.Events = append(view.Events, event)
+
+		if dateStr == today {
+			view.TodayEvents = append(view.TodayEvents, event)
+		}
 	}
 
 	for _, day := range mealsView.Days {
