@@ -24,6 +24,7 @@ func (app *Application) Routes() http.Handler {
 
 	mux.HandleFunc("GET /{$}", app.dashboardPage)
 	mux.HandleFunc("POST /dashboard/tasks/occurrences/{id}/toggle", app.toggleDashboardTaskOccurrence)
+	mux.HandleFunc("GET /weekly-summary.pdf", app.downloadWeeklySummary)
 
 	mux.HandleFunc("GET /planned-meals", app.plannedMeals)
 	mux.HandleFunc("POST /meals", app.upsertMeal)

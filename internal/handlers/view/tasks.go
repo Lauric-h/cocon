@@ -81,33 +81,55 @@ func buildTaskItem(tasks *store.TaskStore, task models.Task) (TaskItem, error) {
 	return item, nil
 }
 
+// filterTasksForWeek ne garde que les tâches planifiées dont l'échéance tombe dans [weekStart, weekEnd].
+func filterTasksForWeek(all AllTasks, weekStart, weekEnd time.Time) []TaskItem {
+	weekStartStr, weekEndStr := weekStart.Format("2006-01-02"), weekEnd.Format("2006-01-02")
+
+	var result []TaskItem
+	for _, item := range all.Planned {
+		if item.DueDate == "" || item.DueDate < weekStartStr || item.DueDate > weekEndStr {
+			continue
+		}
+		result = append(result, item)
+	}
+	return result
+}
+
 type DashboardTasks struct {
 	TasksRemaining int
 	TasksPreview   []TaskItem
 }
 
+// BuildDashboardTasks renvoie les tâches de la semaine, plafonnées à 5, pour l'aperçu du dashboard.
 func BuildDashboardTasks(tasks *store.TaskStore) (DashboardTasks, error) {
 	weekStart := helpers.StartOfWeek(time.Now())
 	weekEnd := weekStart.AddDate(0, 0, 6)
-	weekStartStr, weekEndStr := weekStart.Format("2006-01-02"), weekEnd.Format("2006-01-02")
 
 	all, err := BuildAllTasks(tasks)
 	if err != nil {
 		return DashboardTasks{}, err
 	}
 
+	weekItems := filterTasksForWeek(all, weekStart, weekEnd)
+
 	view := DashboardTasks{}
-	for _, item := range all.Planned {
-		if item.DueDate == "" || item.DueDate < weekStartStr || item.DueDate > weekEndStr {
-			continue
-		}
+	for _, item := range weekItems {
 		if !item.Done {
 			view.TasksRemaining++
 		}
-		view.TasksPreview = append(view.TasksPreview, item)
 	}
+	view.TasksPreview = weekItems
 	if len(view.TasksPreview) > 5 {
 		view.TasksPreview = view.TasksPreview[:5]
 	}
 	return view, nil
+}
+
+// BuildWeekTasks renvoie toutes les tâches planifiées de la semaine, sans plafond (pour le PDF).
+func BuildWeekTasks(tasks *store.TaskStore, weekStart time.Time) ([]TaskItem, error) {
+	all, err := BuildAllTasks(tasks)
+	if err != nil {
+		return nil, err
+	}
+	return filterTasksForWeek(all, weekStart, weekStart.AddDate(0, 0, 6)), nil
 }

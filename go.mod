@@ -3,6 +3,7 @@ module cocon
 go 1.26.5
 
 require (
+	codeberg.org/go-pdf/fpdf v0.12.0
 	github.com/arran4/golang-ical v0.3.6
 	github.com/joho/godotenv v1.5.1
 	modernc.org/sqlite v1.58.0

@@ -54,3 +54,8 @@ func StartOfWeek(t time.Time) time.Time {
 	offset := weekday - 1
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()).AddDate(0, 0, -offset)
 }
+
+// DayMonth "31 août" (jour du mois + nom du mois, sans année).
+func DayMonth(t time.Time) string {
+	return t.Format("2") + " " + months[t.Month()]
+}
