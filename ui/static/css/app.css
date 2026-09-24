@@ -685,3 +685,77 @@ input:focus, textarea:focus { outline: none; }
     text-align: left;
     margin-top: 0.15rem;
 }
+
+/* --- Responsive : mobile --- */
+.mobile-tabbar { display: none; }
+
+@media (max-width: 700px) {
+    /* Nav */
+    .nav-group { display: none; }
+    .mobile-tabbar {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-top: 1px solid var(--color-border);
+        padding: 0.4rem 0;
+        z-index: 20;
+    }
+    .tab-icon {
+        font-size: 1.4rem;
+        text-decoration: none;
+        padding: 0.35rem 1.1rem;
+        border-radius: 0.75rem;
+        line-height: 1;
+    }
+    .tab-icon.active { background: var(--color-terracotta-muted); }
+
+    .app-shell, .dashboard-panel, .tasks-panel { padding-bottom: 4.5rem; }
+
+    .app-shell { flex-direction: column; align-items: center; }
+    .meals-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        padding: 1.25rem 1rem;
+    }
+    .groceries-panel {
+        width: 100%;
+        min-width: 0;
+        padding: 1.25rem 1rem;
+    }
+    .page-title {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .meal-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .day-header {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    .no-meals-label {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .add-item-bar { flex-wrap: nowrap; }
+    .add-item-bar input[name="name"] { font-size: 1rem; }
+
+    .meals-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    .day-card {
+        width: 100%;
+        max-width: 480px;
+    }
+}

@@ -15,4 +15,9 @@
 	</nav>
 	<div class="avatar">L</div>
 </header>
+<nav class="mobile-tabbar">
+	<a href="/" class="tab-icon{{if eq . "home"}} active{{end}}" aria-label="Accueil">🏠</a>
+	<a href="/planned-meals" class="tab-icon{{if eq . "meals"}} active{{end}}" aria-label="Repas et courses">🍽️</a>
+	<a href="/tasks" class="tab-icon{{if eq . "tasks"}} active{{end}}" aria-label="Tâches">✅</a>
+</nav>
 {{end}}
