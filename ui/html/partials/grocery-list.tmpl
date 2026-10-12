@@ -4,7 +4,7 @@
 	<ul class="grocery-list">
 		{{range .Unchecked}}
 		<li class="grocery-item">
-			<input type="checkbox" class="grocery-checkbox" hx-post="/groceries/{{.ID}}/toggle" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">
+			<input type="checkbox" class="grocery-checkbox" hx-post="/groceries/{{.ID}}/toggle" hx-trigger="change" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">
 			<span class="name">{{.Name}}</span>
 			{{if .Quantity}}<span class="qty">×{{.Quantity}}</span>{{end}}
 			<a href="#" class="delete" hx-post="/groceries/{{.ID}}/delete" hx-target="#grocery-list-wrapper" hx-swap="outerHTML" hx-confirm="Supprimer cet article ?">✕</a>
@@ -27,7 +27,7 @@
 	<ul class="grocery-list">
 		{{range .Checked}}
 		<li class="grocery-item checked">
-			<input type="checkbox" class="grocery-checkbox" checked hx-post="/groceries/{{.ID}}/toggle" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">
+			<input type="checkbox" class="grocery-checkbox" checked hx-post="/groceries/{{.ID}}/toggle" hx-trigger="change" hx-target="#grocery-list-wrapper" hx-swap="outerHTML">
 			<span class="name">{{.Name}}</span>
 			{{if .Quantity}}<span class="qty">×{{.Quantity}}</span>{{end}}
 		</li>
