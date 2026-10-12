@@ -115,5 +115,60 @@
         {{end}}
     </section>
 
+    <section class="task-section">
+        <div class="task-section-header">
+            <h2 class="section-title">Terminées</h2>
+            {{if .Completed}}
+                <span class="task-count">{{len .Completed}}</span>
+            {{end}}
+        </div>
+
+        {{if .Completed}}
+        <ul class="task-list">
+            {{range .Completed}}
+            <li class="task-item checked">
+
+                <input
+                    type="checkbox"
+                    class="task-checkbox"
+                    checked
+                    {{if .OccurrenceID}}
+                        hx-post="/tasks/occurrences/{{.OccurrenceID}}/toggle"
+                        hx-target="#task-list-wrapper"
+                        hx-swap="outerHTML"
+                    {{end}}
+                >
+
+                <div class="task-content">
+                    <span class="task-name">{{.Title}}</span>
+
+                    <div class="task-meta">
+                        {{if .DueDateLabel}}
+                            <span class="task-date">{{.DueDateLabel}}</span>
+                        {{end}}
+
+                        {{if .CategoryLabel}}
+                            <span class="task-category">{{.CategoryLabel}}</span>
+                        {{end}}
+                    </div>
+                </div>
+
+                <a
+                    href="#"
+                    class="task-delete"
+                    hx-post="/tasks/{{.ID}}/delete"
+                    hx-target="#task-list-wrapper"
+                    hx-swap="outerHTML"
+                    hx-confirm="Supprimer cette tâche ?"
+                >✕</a>
+
+            </li>
+            {{end}}
+        </ul>
+        {{else}}
+            <p class="task-empty">Aucune tâche terminée.</p>
+        {{end}}
+    </section>
+
 </div>
 {{end}}

@@ -4,6 +4,7 @@ import (
 	"cocon/internal/helpers"
 	"cocon/internal/models"
 	"cocon/internal/store"
+	"sort"
 	"time"
 )
 
@@ -27,8 +28,9 @@ type TaskItem struct {
 }
 
 type AllTasks struct {
-	Planned []TaskItem
-	Backlog []TaskItem
+	Planned   []TaskItem
+	Backlog   []TaskItem
+	Completed []TaskItem
 }
 
 func BuildAllTasks(tasks *store.TaskStore) (AllTasks, error) {
@@ -47,7 +49,11 @@ func BuildAllTasks(tasks *store.TaskStore) (AllTasks, error) {
 		if err != nil {
 			return AllTasks{}, err
 		}
-		view.Planned = append(view.Planned, item)
+		if item.Done {
+			view.Completed = append(view.Completed, item)
+		} else {
+			view.Planned = append(view.Planned, item)
+		}
 	}
 	for _, task := range backlog {
 		item, err := buildTaskItem(tasks, task)
@@ -81,12 +87,18 @@ func buildTaskItem(tasks *store.TaskStore, task models.Task) (TaskItem, error) {
 	return item, nil
 }
 
-// filterTasksForWeek ne garde que les tâches planifiées dont l'échéance tombe dans [weekStart, weekEnd].
+// filterTasksForWeek keeps scheduled tasks whose due date falls within [weekStart, weekEnd].
 func filterTasksForWeek(all AllTasks, weekStart, weekEnd time.Time) []TaskItem {
 	weekStartStr, weekEndStr := weekStart.Format("2006-01-02"), weekEnd.Format("2006-01-02")
 
+	scheduled := append([]TaskItem{}, all.Planned...)
+	scheduled = append(scheduled, all.Completed...)
+	sort.SliceStable(scheduled, func(i, j int) bool {
+		return scheduled[i].DueDate < scheduled[j].DueDate
+	})
+
 	var result []TaskItem
-	for _, item := range all.Planned {
+	for _, item := range scheduled {
 		if item.DueDate == "" || item.DueDate < weekStartStr || item.DueDate > weekEndStr {
 			continue
 		}
