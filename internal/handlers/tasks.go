@@ -114,11 +114,13 @@ func (app *Application) toggleDashboardTaskOccurrence(w http.ResponseWriter, r *
 		return
 	}
 
-	dashboardTasksView, err := view.BuildDashboardTasks(app.Tasks)
+	weekStart := requestedWeek(r)
+	dashboardTasksView, err := view.BuildDashboardTasks(app.Tasks, weekStart)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
+	dashboardTasksView.WeekQuery = buildWeekNavigation("/", weekStart).Query
 	app.render(w, http.StatusOK, "dashboard-tasks.tmpl", dashboardTasksView)
 }
 

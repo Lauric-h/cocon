@@ -9,7 +9,7 @@
 		{{range .TasksPreview}}
 		<li class="grocery-item{{if .Done}} checked{{end}}">
 			<input type="checkbox" class="grocery-checkbox" {{if .Done}}checked{{end}}
-				{{if .OccurrenceID}}hx-post="/dashboard/tasks/occurrences/{{.OccurrenceID}}/toggle" hx-target="#dashboard-tasks" hx-swap="outerHTML"{{end}}>
+				{{if .OccurrenceID}}hx-post="/dashboard/tasks/occurrences/{{.OccurrenceID}}/toggle{{$.WeekQuery}}" hx-target="#dashboard-tasks" hx-swap="outerHTML"{{end}}>
 			<span class="name">{{.Title}}</span>
 			{{if .CategoryLabel}}<span class="qty">{{.CategoryLabel}}</span>{{end}}
 		</li>

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"cocon/internal/handlers/view"
-	"cocon/internal/helpers"
 	"cocon/internal/models"
 	"net/http"
 	"strconv"
@@ -10,7 +9,7 @@ import (
 )
 
 func (app *Application) plannedMeals(w http.ResponseWriter, r *http.Request) {
-	weekStart := helpers.StartOfWeek(time.Now())
+	weekStart := requestedWeek(r)
 
 	mealsView, err := view.BuildPlannedMeals(app.Meals, weekStart)
 	if err != nil {
@@ -25,9 +24,10 @@ func (app *Application) plannedMeals(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, http.StatusOK, "planned_meals.tmpl", map[string]any{
-		"WeekStart": mealsView.WeekStart,
-		"Days":      mealsView.Days,
-		"Groceries": groceriesView,
+		"WeekStart":      mealsView.WeekStart,
+		"Days":           mealsView.Days,
+		"Groceries":      groceriesView,
+		"WeekNavigation": buildWeekNavigation("/planned-meals", weekStart),
 	})
 }
 

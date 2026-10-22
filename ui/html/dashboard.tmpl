@@ -17,6 +17,8 @@
 		<h1 class="page-title">Bonjour 👋</h1>
 		<p class="dashboard-subtitle">Voici un aperçu de votre semaine.</p>
 
+		{{template "week-navigation.tmpl" .WeekNavigation}}
+
 		<div class="week-strip-header">
 			<h2 class="section-title">Cette semaine</h2>
 			<span class="eyebrow">{{.WeekRangeLabel}}</span>
@@ -145,6 +147,8 @@
 			<h1 class="page-title">Bonjour 👋</h1>
 			<p class="dashboard-subtitle">Voici un aperçu de votre journée.</p>
 		</header>
+
+		{{template "week-navigation.tmpl" .WeekNavigation}}
 
 
 		<!-- =====================
@@ -325,7 +329,7 @@
                 <li class="grocery-item{{if .Done}} checked{{end}}">
                     <input type="checkbox" class="grocery-checkbox" {{if .Done}}checked{{end}}
                         {{if .OccurrenceID}}
-                        hx-post="/dashboard/tasks/occurrences/{{.OccurrenceID}}/toggle"
+                        hx-post="/dashboard/tasks/occurrences/{{.OccurrenceID}}/toggle{{$.WeekQuery}}"
                         hx-target="#mobile-tasks-content"
                         hx-swap="outerHTML"
                         {{end}}>

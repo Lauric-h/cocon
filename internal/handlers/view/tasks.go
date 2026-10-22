@@ -110,11 +110,11 @@ func filterTasksForWeek(all AllTasks, weekStart, weekEnd time.Time) []TaskItem {
 type DashboardTasks struct {
 	TasksRemaining int
 	TasksPreview   []TaskItem
+	WeekQuery      string
 }
 
 // BuildDashboardTasks renvoie les tâches de la semaine, plafonnées à 5, pour l'aperçu du dashboard.
-func BuildDashboardTasks(tasks *store.TaskStore) (DashboardTasks, error) {
-	weekStart := helpers.StartOfWeek(time.Now())
+func BuildDashboardTasks(tasks *store.TaskStore, weekStart time.Time) (DashboardTasks, error) {
 	weekEnd := weekStart.AddDate(0, 0, 6)
 
 	all, err := BuildAllTasks(tasks)

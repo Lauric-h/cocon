@@ -12,6 +12,8 @@
 			<p class="eyebrow">Semaine du {{.WeekStart.Format "02 January 2006"}}</p>
 			<h1 class="page-title">Planning repas</h1>
 
+			{{template "week-navigation.tmpl" .WeekNavigation}}
+
 			{{range .Days}}
 			<div class="day-card{{if .IsToday}} today{{end}}">
 				<div class="day-header">

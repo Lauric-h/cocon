@@ -1,0 +1,10 @@
+{{define "week-navigation.tmpl"}}
+<nav class="week-navigation" aria-label="Navigation semaine">
+	<a class="week-navigation-link" href="{{.PreviousURL}}" aria-label="Semaine précédente">←</a>
+	<strong class="week-navigation-range">{{.Label}}</strong>
+	<a class="week-navigation-link" href="{{.NextURL}}" aria-label="Semaine suivante">→</a>
+	{{if not .IsCurrent}}
+	<a class="week-navigation-today" href="{{.CurrentURL}}">Aujourd'hui</a>
+	{{end}}
+</nav>
+{{end}}

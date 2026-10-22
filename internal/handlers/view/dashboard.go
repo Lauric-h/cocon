@@ -41,11 +41,13 @@ type Dashboard struct {
 	TasksPreview   []TaskItem
 	GroceriesLeft  int
 	Events         []Event
+	WeekNavigation WeekNavigation
+	WeekQuery      string
 }
 
-func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks *store.TaskStore, cal *calendar.Client) (Dashboard, error) {
-	weekStart := helpers.StartOfWeek(time.Now())
+func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks *store.TaskStore, cal *calendar.Client, weekStart time.Time) (Dashboard, error) {
 	weekEnd := weekStart.AddDate(0, 0, 6)
+	todayWeekStart := helpers.StartOfWeek(time.Now())
 	today := time.Now().Format("2006-01-02")
 
 	mealsView, err := BuildPlannedMeals(meals, weekStart)
@@ -53,12 +55,20 @@ func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks
 		return Dashboard{}, err
 	}
 
+	todayMealsView := mealsView
+	if !weekStart.Equal(todayWeekStart) {
+		todayMealsView, err = BuildPlannedMeals(meals, todayWeekStart)
+		if err != nil {
+			return Dashboard{}, err
+		}
+	}
+
 	groceriesView, err := BuildGroceries(groceries)
 	if err != nil {
 		return Dashboard{}, err
 	}
 
-	tasksBlock, err := BuildDashboardTasks(tasks)
+	tasksBlock, err := BuildDashboardTasks(tasks, weekStart)
 	if err != nil {
 		return Dashboard{}, err
 	}
@@ -68,9 +78,17 @@ func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks
 		return Dashboard{}, err
 	}
 
+	todayEvents := events
+	if !weekStart.Equal(todayWeekStart) {
+		todayEvents, err = cal.EventsBetween(todayWeekStart, todayWeekStart.AddDate(0, 0, 7).Add(-time.Second))
+		if err != nil {
+			return Dashboard{}, err
+		}
+	}
+
 	view := Dashboard{
 		TodayLabel:     helpers.DateLong(time.Now()),
-		WeekRangeLabel: weekStart.Format("2") + " – " + weekEnd.Format("2 Jan"),
+		WeekRangeLabel: helpers.WeekRange(weekStart),
 		GroceriesLeft:  len(groceriesView.Unchecked),
 		TasksRemaining: tasksBlock.TasksRemaining,
 		TasksPreview:   tasksBlock.TasksPreview,
@@ -110,9 +128,6 @@ func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks
 
 		view.Events = append(view.Events, event)
 
-		if dateStr == today {
-			view.TodayEvents = append(view.TodayEvents, event)
-		}
 	}
 
 	for _, ev := range past {
@@ -136,9 +151,17 @@ func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks
 
 		view.Events = append(view.Events, event)
 
-		if dateStr == today {
-			view.TodayEvents = append(view.TodayEvents, event)
+	}
+
+	for _, ev := range todayEvents {
+		if ev.Start.Format("2006-01-02") != today {
+			continue
 		}
+		view.TodayEvents = append(view.TodayEvents, Event{
+			Title:     ev.Title,
+			DateLabel: eventDateLabel(ev),
+			IsPast:    ev.Start.Before(now),
+		})
 	}
 
 	for _, day := range mealsView.Days {
@@ -162,11 +185,19 @@ func BuildDashboard(meals *store.MealStore, groceries *store.GroceryStore, tasks
 				continue
 			}
 			strip.MealDots = append(strip.MealDots, mealDotClass(cell.MealSlot))
-			if strip.IsToday {
+		}
+		view.WeekDays = append(view.WeekDays, strip)
+	}
+
+	for _, day := range todayMealsView.Days {
+		if !day.IsToday {
+			continue
+		}
+		for _, cell := range day.Cells {
+			if cell.Dish != "" {
 				view.TodayMeals = append(view.TodayMeals, cell)
 			}
 		}
-		view.WeekDays = append(view.WeekDays, strip)
 	}
 
 	return view, nil
